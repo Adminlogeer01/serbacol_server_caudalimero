@@ -1,7 +1,5 @@
 # librerias 
 
-# this code is refactory by Manuel Manjarres and is based from the version 1 of the code from digiwr31 
-
 #nota: probablemente se accede al digi serial  asi serial.Serial("/dev/serial/port1", 115200) 
 
 
@@ -77,7 +75,7 @@ class IX10ModbusIO(object):
             hooks.install_hook("modbus.Slave.handle_read_holding_registers_request", self.hook_read_holding_registers)
             print("Server started")
         else: 
-            print("Error: Invalid server type. Must be 'TCP' or 'RTU'.")
+            raise MiError("Invalid server type. Must be 'TCP' or 'RTU'.")
             
 
 
@@ -86,21 +84,26 @@ class IX10ModbusIO(object):
         configura el servidor Modbus RTU.
         Este método configura el servidor Modbus RTU. Crea un objeto de servidor RTU y lo inicia. Luego llama al método
         'setup_slave' para configurar los esclavos. No devuelve nada.
+
+        NOTA: el puerto serial para el digi IX10 es /dev/serial/port1 segun su documentacion 
         
         Args:
             self: El objeto puntero.
         Returns:
             None
         """
-        self.server = RtuServer(serial.Serial(port='COM4',
-                                              baudrate=9600,
-                                              bytesize=8,
-                                              parity='N',
-                                              stopbits=1,
-                                              xonxoff=0))
+        
+        self.server = RtuServer(serial.Serial(port='/dev/serial/port1',
+                                            baudrate=9600,
+                                            bytesize=8,
+                                            parity='N',
+                                            stopbits=1,
+                                            xonxoff=0))
         self.server.start()
         self.setup_slave()
- 
+  
+
+
     def setup_modbus_tcpServer(self):
         """
         Configura el servidor Modbus TCP.
@@ -360,6 +363,8 @@ class IX10ModbusIO(object):
 if __name__ == "__main__":
 
         counter_error = 0
+
+        
         while 1: 
             try:
                                 
@@ -374,8 +379,8 @@ if __name__ == "__main__":
                 print("server ended")
                 sleep(1)
                
-            except: 
-                print("error al iniciar el servidor")
+            except Exception as e : 
+                print(f"error al iniciar el servidor:\n\t{e} ")
                 counter_error += 1
                 if counter_error > 3:
                     print("el servidor no se pudo iniciar")
