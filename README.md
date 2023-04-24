@@ -1,1 +1,1 @@
-# servidor modbus tcp/serialRTU para digiIX10 DIGIIX30
+# servidor modbus tcp/serialRTU para Digi IX10 Digi IX30
