@@ -67,15 +67,16 @@ class IX10ModbusIO(object):
             
         """
         #aca debe ir un manejo del logger usando digisarcli 
-        if self.server_type == 'TCP' or self.server_type == 'RTU': 
-            if self.server_type == 'TCP':
-                self.setup_modbus_tcpServer()
-            elif self.server_type == 'RTU':
-                self.setup_modbus_rtuServer()
-            hooks.install_hook("modbus.Slave.handle_read_holding_registers_request", self.hook_read_holding_registers)
-            print("Server started")
+       
+        if self.server_type == 'TCP':
+            self.setup_modbus_tcpServer()
+        elif self.server_type == 'RTU':
+            self.setup_modbus_rtuServer()
         else: 
             raise MiError("Invalid server type. Must be 'TCP' or 'RTU'.")
+        
+        hooks.install_hook("modbus.Slave.handle_read_holding_registers_request", self.hook_read_holding_registers)
+        print("Server started")
             
 
 
@@ -94,7 +95,7 @@ class IX10ModbusIO(object):
         """
         
         self.server = RtuServer(serial.Serial(port='/dev/serial/port1',
-                                            baudrate=9600,
+                                            baudrate=115200,
                                             bytesize=8,
                                             parity='N',
                                             stopbits=1,
@@ -322,6 +323,7 @@ class IX10ModbusIO(object):
 
         # print(request_pdu[1]) #este es el registro que se esta leyendo
         # print(type(request_pdu[1][2])) #este es el tipo de dato que llega en el mensaje pdu
+        
 
         if (request_pdu[1][2] == 0 or request_pdu[1][2] == '0x00') or (request_pdu[1][2] == 1 or request_pdu[1][2] == '0x01'):
             #ELABORAR EL RESTO DE CODIGO CORRESPONDIENTE, SIN EMBARGO PARECE TRABAJAR CON 
